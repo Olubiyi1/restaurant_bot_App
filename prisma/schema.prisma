@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BotState {
+  IDLE 
+  BROWSING_CATEGORIES
+  BROWSING_ITEMS
+  ORDER_ACTIVE
+  AWAITING_CHECKOUT
+  SCHEDULING
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  SCHEDULED
+}
+
+model Session {
+  id              String     @id
+  state           BotState   @default(IDLE)
+  currentCategory Int?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  cartItems       CartItem[]
+  orders          Order[]
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  sessionId  String
+  menuItemId Int
+  name       String
+  price      Float
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+
+  session    Session  @relation(fields: [sessionId], references: [id])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  sessionId    String
+  total        Float
+  status       OrderStatus @default(PENDING)
+  paymentRef   String?
+  scheduledFor DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  session      Session     @relation(fields: [sessionId], references: [id])
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id         String  @id @default(uuid())
+  orderId    String
+  menuItemId Int
+  name       String
+  price      Float
+  quantity   Int
+
+  order      Order   @relation(fields: [orderId], references: [id])
+}

@@ -5,5 +5,4 @@ const chatRoute = Router()
 
 chatRoute.post("/", sendMessage)
 chatRoute.get("/history/:sessionId", getOrderHistory)
-
 export default chatRoute;

@@ -35,7 +35,7 @@ model Session {
 }
 
 model CartItem {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   sessionId  String
   menuItemId Int
   name       String
@@ -47,7 +47,7 @@ model CartItem {
 }
 
 model Order {
-  id           String      @id @default(cuid())
+  id           String      @id @default(uuid())
   sessionId    String
   total        Float
   status       OrderStatus @default(PENDING)
